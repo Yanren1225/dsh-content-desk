@@ -1,0 +1,4 @@
+# dsh-content-desk 的 Loader 补丁：插入文案审核 / 配图插件条目。
+- insert:
+    - id: content-desk
+      name: 'dsh-content-desk'

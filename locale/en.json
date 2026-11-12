@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Copy and model toolkit",
+    "description": "A generic model layer (any DSH text model or image backend, no provider lock-in) plus copy review, multi-model comparison and cover-image workflows."
+  }
+}

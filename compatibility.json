@@ -1,0 +1,13 @@
+{
+  "latestTested": "0.2.2-rc.1",
+  "supported": [
+    "0.2.2-rc.1",
+    "0.2.2-alpha.3",
+    "0.2.2-alpha.2",
+    "0.2.1-rc.5",
+    "0.2.1-rc.4",
+    "0.2.0-rc.2",
+    "0.2.0-rc.1"
+  ],
+  "notes": "依赖 0.2.x 的 ctx.tools.executable/definitions、工具 output 契约；0.1.x 宿主上生图后端发现会静默退化为「无后端」。"
+}

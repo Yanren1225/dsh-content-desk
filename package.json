@@ -1,0 +1,61 @@
+{
+  "name": "dsh-content-desk",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "文案审核与配图工具：用 DSH 里注册的模型审核、润色、改写文案，并调用已安装的生图后端做封面/配图，支持多模型对比。",
+  "keywords": [
+    "dsh-plugin",
+    "deepseek-harness",
+    "copywriting",
+    "copy-review",
+    "content",
+    "ai-image"
+  ],
+  "license": "MIT",
+  "author": {
+    "name": "Yanren1225",
+    "url": "https://github.com/Yanren1225"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Yanren1225/dsh-content-desk.git"
+  },
+  "homepage": "https://github.com/Yanren1225/dsh-content-desk#readme",
+  "bugs": {
+    "url": "https://github.com/Yanren1225/dsh-content-desk/issues"
+  },
+  "main": "./index.js",
+  "exports": {
+    ".": "./index.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "lib/*.js",
+    "cordis.patch.yml",
+    "compatibility.json",
+    "locale/*.json",
+    "icon.svg",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.mjs"
+  },
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0",
+    "dsh": ">=0.2.0-rc.1"
+  },
+  "publishConfig": {
+    "access": "public",
+    "tag": "latest"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}

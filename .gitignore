@@ -1,0 +1,14 @@
+# dependencies
+node_modules/
+
+# release artifacts
+.release/
+*.tgz
+
+# local review artifacts (extracted DSH packages, harnesses, audit docs)
+.review-artifacts/
+
+# editor / OS
+.DS_Store
+Thumbs.db
+*.swp

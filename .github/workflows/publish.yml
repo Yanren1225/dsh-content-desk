@@ -1,0 +1,88 @@
+name: publish
+
+# 目前只支持手动触发：npm 账号恢复并配置好 NPM_TOKEN Secret 后，
+# 再把下面的 tag 触发打开（推 v* tag 即自动发布）。
+#
+# on:
+#   push:
+#     tags: ['v*']
+#   workflow_dispatch:
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write # npm provenance（构建来源证明）
+
+concurrency:
+  group: npm-publish
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    name: verify tag / version / tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # 打 tag 发布时要求 tag 与 package.json 版本一致（v0.7.0 ↔ 0.7.0）
+      - name: Check tag matches package version
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          version="$(node -p "require('./package.json').version")"
+          echo "tag=$tag package=$version"
+          if [ "$tag" != "$version" ]; then
+            echo "::error::tag $tag does not match package.json version $version"
+            exit 1
+          fi
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Package contents smoke test
+        run: npm pack --dry-run
+
+  publish:
+    name: npm publish
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+
+      # 已经发布过的版本不重复发（重跑 workflow 时保持绿色）
+      - name: Check whether this version is already published
+        id: check
+        run: |
+          version="$(node -p "require('./package.json').version")"
+          echo "version=$version"
+          if npm view "dsh-content-desk@$version" version >/dev/null 2>&1; then
+            echo "published=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::dsh-content-desk@$version already published, skipping"
+          else
+            echo "published=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish to npm (with provenance)
+        if: steps.check.outputs.published == 'false'
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Summary
+        run: |
+          if [ "${{ steps.check.outputs.published }}" = "true" ]; then
+            echo "### npm: dsh-content-desk@${{ steps.check.outputs.version }} 已存在，本次跳过" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "### npm: 已发布 dsh-content-desk@${{ steps.check.outputs.version }}" >> "$GITHUB_STEP_SUMMARY"
+            echo "https://www.npmjs.com/package/dsh-content-desk" >> "$GITHUB_STEP_SUMMARY"
+          fi
